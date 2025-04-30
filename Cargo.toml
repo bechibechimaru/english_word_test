@@ -4,3 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+dotenv = "0.15.0"
+rand = "0.9.1"
+sqlx = { version = "0.8.5", features = ["mysql", "runtime-tokio"] }
+tokio = { version = "1.44.2", features = ["full"] }
+
