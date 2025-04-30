@@ -4,7 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+chrono = "0.4.41"
 dotenv = "0.15.0"
+genpdf = "0.2.0"
 rand = "0.9.1"
 sqlx = { version = "0.8.5", features = ["mysql", "runtime-tokio"] }
 tokio = { version = "1.44.2", features = ["full"] }
