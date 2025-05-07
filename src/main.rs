@@ -8,6 +8,8 @@ use axum::{
     routing::post,
     response::Json, Router, extract::State,
 };
+use hyper::Method;
+use tower_http::cors::{CorsLayer, AllowHeaders, Any};
 use serde::{Deserialize, Serialize};
 use rand::prelude::*;
 use sqlx::mysql::MySqlPool;
@@ -45,11 +47,18 @@ async fn main() -> Result<(), sqlx::Error> {
 
     let pool = MySqlPool::connect(&database_url).await?;
     let app_state = Arc::new(pool);
+
+    let cors = CorsLayer::new()
+        .allow_origin(Any) // 　本番環境では特定のオリジンのみを許可
+        .allow_headers(AllowHeaders::any()) 
+        .allow_methods(vec![Method::GET, Method::POST, Method::OPTIONS]);
     
     // Routerを作成し、/generate-testパスでハンドラを設定
     let app = Router::new()
         .route("/generate-test", post(generate_test_handler))
-        .with_state(app_state);  // Stateを渡す
+        .with_state(app_state)
+        .layer(cors);
+
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 

@@ -23,7 +23,7 @@ const MainPage = () => {
         setError(null);
 
         try{
-            const response = await axios.post("http://localhost:3000/genarate-test", {
+            const response = await axios.post("http://localhost:3000/generate-test", {
                 english_word_book: englishWordBook,
                 times: times,
                 start_number: startNumber,
