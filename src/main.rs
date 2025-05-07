@@ -1,12 +1,21 @@
 use std::env;
-use std::time::Instant;
+use std::sync::Arc;
+use std::fs::File;
+use std::io::Read;
 
+use dotenv::dotenv;
+use axum::{
+    routing::post,
+    response::Json, Router, extract::State,
+};
+use serde::{Deserialize, Serialize};
 use rand::prelude::*;
-use sqlx::mysql::MySqlPoolOptions;
+use sqlx::mysql::MySqlPool;
 use genpdf::{elements, style, Alignment, Document};
 use genpdf::fonts::FontData;
 use chrono::prelude::Local;
-use dotenv::dotenv;
+use base64::{engine::general_purpose, Engine};
+use axum::response::IntoResponse;
 
 #[derive(Debug, sqlx::FromRow)]
 struct Test {
@@ -14,54 +23,71 @@ struct Test {
     japanese_word: String
 }
 
+#[derive(Serialize, Deserialize)]
+struct Request {
+    english_word_book: String,
+    times: u16,
+    start_number: u16, 
+    end_number: u16,
+}
+
+#[derive(Serialize)]
+struct Response {
+    test_data: String
+}
+
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
-
     dotenv().ok();
-
-    let start = Instant::now();
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set.");
     // databaseに接続する
-    let pool = MySqlPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url).await?;
 
-    let times = 10;
-    let start_number = 1;
-    let end_number = 2027;
+    let pool = MySqlPool::connect(&database_url).await?;
+    let app_state = Arc::new(pool);
+    
+    // Routerを作成し、/generate-testパスでハンドラを設定
+    let app = Router::new()
+        .route("/generate-test", post(generate_test_handler))
+        .with_state(app_state);  // Stateを渡す
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
+
+    Ok(())
+}
+
+async fn generate_test_handler(
+    State(pool): State<Arc<MySqlPool>>, 
+    Json(request): Json<Request>
+) -> impl IntoResponse { 
+    let book_name = request.english_word_book;
+    let times = request.times;
+    let start_number = request.start_number;
+    let end_number = request.end_number;
 
     let row_id_list = generate_random_number(times, start_number, end_number);
 
-    let id_list = row_id_list.iter()
-        .map(|id| id.to_string()) 
-        .collect::<Vec<_>>()
-        .join(",");
+    let sql_query = generate_sql_query(&book_name, row_id_list);
 
-    let sql_query = format!(
-        "SELECT * FROM shisutan WHERE id IN ({});",
-        id_list
-    );
-
-    let rows: Vec<Test>= sqlx::query_as(&sql_query)
-        .fetch_all(&pool)
-        .await?;
+    let rows = execute_sql_query(&pool, &sql_query).await.unwrap();
 
     let english_words: Vec<String> = rows.iter().map(|r| r.english_word.clone()).collect();
     let japanese_words: Vec<String> = rows.iter().map(|r| r.japanese_word.clone()).collect();
-    
-    println!("問題集：{:?}",english_words);   
-    println!("解答集: {:?}", japanese_words);
 
-    let question_sheet = gen_pdf(english_words, japanese_words);
+    let question_sheet = gen_test_pdf(english_words, japanese_words);
 
-    question_sheet.render_to_file("./question_sheet.pdf").expect("failed to write PDF file");
+    let file_path = "temp_question_sheet.pdf";
+    question_sheet.render_to_file(file_path).expect("Failed to write PDF file");
 
-    let duration = start.elapsed();
+    let mut file = File::open(file_path).expect("Failed to open PDF file.");
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer).expect("Failed to read PDF file");
 
-    println!("実行時間：{:?}", duration);
+    let pdf_base64 = general_purpose::STANDARD.encode(&buffer);
 
-    Ok(())
+    Json(Response {
+        test_data: pdf_base64,
+    })
 }
 
 fn generate_random_number(times: u16, start_number: u16, end_number: u16) -> Vec<u16> {
@@ -73,10 +99,22 @@ fn generate_random_number(times: u16, start_number: u16, end_number: u16) -> Vec
         ids.push(random_number);
     }
 
-    return ids;
+    ids
 }
 
-fn gen_pdf(question_list: Vec<String>, answer_list: Vec<String>) -> Document{
+fn generate_sql_query(book_name: &str, ids: Vec<u16>) -> String {
+    let id_list = ids.iter().map(|id| id.to_string()).collect::<Vec<String>>().join(",");
+    format!("SELECT english_word, japanese_word FROM {} WHERE id IN ({})", book_name, id_list)
+}
+
+async fn execute_sql_query(pool: &MySqlPool, query: &str) -> Result<Vec<Test>, sqlx::Error> {
+    let rows: Vec<Test> = sqlx::query_as(query)
+        .fetch_all(pool)
+        .await?;
+    Ok(rows)
+}
+
+fn gen_test_pdf(question_list: Vec<String>, answer_list: Vec<String>) -> Document{
     let title = "英単語テスト";
 
     // フォント読み込み
@@ -141,12 +179,7 @@ fn gen_pdf(question_list: Vec<String>, answer_list: Vec<String>) -> Document{
         layout.push(elements::Paragraph::new(""));
         doc.push(layout);
     }
-    
-
-    // ファイル出力
-    // doc.render_to_file("./demo_style.pdf").expect("failed to write PDF file");
-
     println!("PDFファイルの生成が完了しました。");
 
-    return doc
+    doc
 }
