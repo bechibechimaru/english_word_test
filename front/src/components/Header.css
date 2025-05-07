@@ -1,0 +1,13 @@
+header {
+    font-size: 2.5em; /* h1と同じ大きさ */
+    font-weight: bold; /* 太字 */
+    text-align: center;
+    margin: 0; /* 上下の余白をなくす */
+    padding: 0; /* 内部の余白をなくす */
+}
+
+@media (max-width: 932px) {
+    header {
+        font-size: 9vw;
+    }
+}
