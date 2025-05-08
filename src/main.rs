@@ -8,6 +8,7 @@ use axum::{
     routing::post,
     response::Json, Router, extract::State,
 };
+use validator::Validate;
 use hyper::Method;
 use tower_http::cors::{CorsLayer, AllowHeaders, Any};
 use serde::{Deserialize, Serialize};
@@ -25,11 +26,14 @@ struct Test {
     japanese_word: String
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Validate)]
 struct Request {
     english_word_book: String,
+    #[validate(range(min = 1))]
     times: u16,
+    #[validate(range(min = 1))]
     start_number: u16, 
+    #[validate(range(min = self.start_number))]
     end_number: u16,
 }
 
@@ -44,6 +48,7 @@ async fn main() -> Result<(), sqlx::Error> {
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set.");
     // databaseに接続する
+    println!("{}", "リクエストを受け取りました。");
 
     let pool = MySqlPool::connect(&database_url).await?;
     let app_state = Arc::new(pool);
@@ -52,7 +57,7 @@ async fn main() -> Result<(), sqlx::Error> {
         .allow_origin(Any) // 　本番環境では特定のオリジンのみを許可
         .allow_headers(AllowHeaders::any()) 
         .allow_methods(vec![Method::GET, Method::POST, Method::OPTIONS]);
-    
+
     // Routerを作成し、/generate-testパスでハンドラを設定
     let app = Router::new()
         .route("/generate-test", post(generate_test_handler))
@@ -84,6 +89,7 @@ async fn generate_test_handler(
     let japanese_words: Vec<String> = rows.iter().map(|r| r.japanese_word.clone()).collect();
 
     let question_sheet = gen_test_pdf(english_words, japanese_words);
+    println!("{}", "pdfデータの生成完了");
 
     let file_path = "temp_question_sheet.pdf";
     question_sheet.render_to_file(file_path).expect("Failed to write PDF file");
@@ -108,6 +114,8 @@ fn generate_random_number(times: u16, start_number: u16, end_number: u16) -> Vec
         ids.push(random_number);
     }
 
+    println!("ランダムに問題番号を生成しました。：{:?}", ids);
+
     ids
 }
 
@@ -124,6 +132,7 @@ async fn execute_sql_query(pool: &MySqlPool, query: &str) -> Result<Vec<Test>, s
 }
 
 fn gen_test_pdf(question_list: Vec<String>, answer_list: Vec<String>) -> Document{
+    println!("{}", "PDFファイルの生成中...");
     let title = "英単語テスト";
 
     // フォント読み込み
@@ -147,7 +156,6 @@ fn gen_test_pdf(question_list: Vec<String>, answer_list: Vec<String>) -> Documen
 
     // 日付欄（右寄せ）
     let date = Local::now().format("%Y/%m/%d").to_string();
-    println!("date : {}", date);
     let mut date_paragraph = elements::Paragraph::new(date);
     date_paragraph.set_alignment(Alignment::Right);
     doc.push(date_paragraph);
@@ -176,7 +184,6 @@ fn gen_test_pdf(question_list: Vec<String>, answer_list: Vec<String>) -> Documen
 
     // 日付欄（右寄せ）
     let date = Local::now().format("%Y/%m/%d").to_string();
-    println!("date : {}", date);
     let mut date_paragraph = elements::Paragraph::new(date);
     date_paragraph.set_alignment(Alignment::Right);
     doc.push(date_paragraph);
@@ -188,7 +195,6 @@ fn gen_test_pdf(question_list: Vec<String>, answer_list: Vec<String>) -> Documen
         layout.push(elements::Paragraph::new(""));
         doc.push(layout);
     }
-    println!("PDFファイルの生成が完了しました。");
 
     doc
 }
