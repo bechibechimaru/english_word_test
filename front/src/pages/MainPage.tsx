@@ -1,15 +1,20 @@
 import { useState } from "react";
+import { ServerRouter, useNavigate } from "react-router-dom";
 
-import Header from "../components/header";
+import Header from "../components/Header";
 
 import axios from "axios";
 import "./MainPage.css";
 
 // 出力する英単語などを入力させるページ
+type GenerateTestRespose = {
+    test_data: string;
+};
 
 const MainPage = () => {
-    // フォームデータの状態を保存
+    const navigate = useNavigate();
 
+    // フォームデータの状態を保存
     const [englishWordBook, setEnglishWordBook] = useState<string>("");
     const [startNumber, setStartNumber] = useState<number>(1);
     const [endNumber, setEndNumber] = useState<number>(100);
@@ -22,8 +27,23 @@ const MainPage = () => {
         setLoading(true);
         setError(null);
 
+        const isValida = validate();
+        if (!isValida) {
+            setLoading(false);
+            return;
+        }
+
+        const confirmed = window.confirm("生成すると自動的にPDFがダウンロードされます。よろしいですか？")
+
+        if (!confirmed) {
+            setLoading(false);
+            return;
+        }
+
         try{
-            const response = await axios.post("http://localhost:3000/generate-test", {
+            const response = await axios.post<GenerateTestRespose>(
+                "http://localhost:3000/generate-test", 
+            {
                 english_word_book: englishWordBook,
                 times: times,
                 start_number: startNumber,
@@ -32,6 +52,9 @@ const MainPage = () => {
 
             // レスポンスデータの処理
             console.log(response.data);
+            
+            navigate("/output", { state: {testData: response.data.test_data } });
+
         }catch (error) {
             setError("テスト作成に失敗しました。")
         } finally {
@@ -40,9 +63,35 @@ const MainPage = () => {
     
     };
 
+    const validate = (): boolean => {
+        if (englishWordBook === "") {
+            setError("英単語帳を選択してください");
+            return false;
+        }
+        else if (startNumber === 0 ) {
+            setError("開始番号は1から指定してください。");
+            return false;
+        }
+        else if (endNumber === 0 ) {
+            setError("適切な終了番号を入力指定してください");
+            return false;
+        }
+        else if (times === 0) {
+            setError("問題数を設定してください");
+            return false;
+        }
+        else if (startNumber >= endNumber) {
+            setError("終了番号は開始番号より後の数値を入力してください");
+            return false;
+        }
+
+        setError(null);
+        return true;
+    };
+
 
     return (
-        <div>
+        <div className="main_content">
             <Header/>
 
             <div>
@@ -111,7 +160,9 @@ const MainPage = () => {
                 <br />
 
                 <button onClick={handleSubmit} disabled={loading}>
-                    {loading ? "生成中...しばらくお待ちください" : "上記の内容でテストを作成する"}
+                    <div className="button_text">
+                        {loading ? "生成中...しばらくお待ちください" : "上記の内容でテストを作成する"}
+                    </div>
                 </button>
             </div>
 
