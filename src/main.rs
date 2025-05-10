@@ -64,7 +64,10 @@ async fn main() -> Result<(), sqlx::Error> {
         .with_state(app_state)
         .layer(cors);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let port = env::var("PORT").expect("PORT must be set.");
+    let port_number = format!("0.0.0.0:{}",port);
+    let listener = tokio::net::TcpListener::bind(port_number).await.unwrap();
+
     axum::serve(listener, app).await.unwrap();
 
     Ok(())
@@ -198,3 +201,4 @@ fn gen_test_pdf(question_list: Vec<String>, answer_list: Vec<String>) -> Documen
 
     doc
 }
+
