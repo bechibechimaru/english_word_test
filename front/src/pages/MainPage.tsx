@@ -124,14 +124,14 @@ const MainPage = () => {
                     <div>
                         開始番号：
                         <input 
-                            type="number" 
+                            type="tel" 
                             value={startNumber}
                             onChange={(e) => setStartNumber(Number(e.target.value))}
                         /> 
                         <br />
                         終了番号：
                         <input 
-                            type="number" 
+                            type="tel" 
                             value={endNumber}
                             onChange={(e) => setEndNumber(Number(e.target.value))}
                         />
@@ -149,7 +149,7 @@ const MainPage = () => {
                         <div>
                             問題数：
                             <input 
-                                type="number" 
+                                type="tel" 
                                 value={times}
                                 onChange={(e) => setTimes(Number(e.target.value))}
                             />
