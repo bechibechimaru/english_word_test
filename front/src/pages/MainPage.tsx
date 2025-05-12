@@ -33,13 +33,6 @@ const MainPage = () => {
             return;
         }
 
-        const confirmed = window.confirm("生成すると自動的にPDFがダウンロードされます。よろしいですか？")
-
-        if (!confirmed) {
-            setLoading(false);
-            return;
-        }
-
         try{
             const response = await axios.post<GenerateTestRespose>(
                 "http://54.178.56.216:3000/generate-test", 
@@ -60,7 +53,6 @@ const MainPage = () => {
         } finally {
             setLoading(false);
         }
-    
     };
 
     const validate = (): boolean => {
@@ -89,7 +81,6 @@ const MainPage = () => {
         return true;
     };
 
-
     return (
         <div className="main_content">
             <Header/>
@@ -103,8 +94,6 @@ const MainPage = () => {
                     英単語帳を選択してください
                     
                     <br />
-                    
-
                     <select 
                         value={englishWordBook}
                         onChange={(e) => setEnglishWordBook(e.target.value)}
@@ -117,8 +106,6 @@ const MainPage = () => {
                 <div className="test_range">
                     <br className="test_range_explanation"/>
                         範囲を指定してください
-                    <br />
-
                     <br />
 
                     <div>
@@ -170,7 +157,6 @@ const MainPage = () => {
 
             <br />
 
-            
         </div>
     );
 };

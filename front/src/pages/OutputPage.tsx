@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import '../style/OutputPage.css';
@@ -8,46 +8,70 @@ const OutputPage = () => {
     const testData = location.state?.testData;
     const navigate = useNavigate();
 
+    const [objectUrl, setObjectUrl] = useState<string | null>(null);
+    const objectUrlRef = useRef<string | null>(null); 
+
     useEffect(() => {
         if (!testData) return;
 
-        // base64 → Blob
         const byteCharacters = atob(testData);
-        const byteNumbers = Array.from(byteCharacters).map(char => char.charCodeAt(0));
+        const byteNumbers = Array.from(byteCharacters).map(c => c.charCodeAt(0));
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "application/pdf" });
 
-        // Blob → Object URL → ダウンロードリンク
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        const pdf_name: string = gen_pdf_name();
-        link.download = pdf_name;
-        link.click();
+        const url = URL.createObjectURL(blob);
+        setObjectUrl(url);
+        objectUrlRef.current = url;
 
-        // メモリ解放
-        URL.revokeObjectURL(link.href);
+        // cleanup on unmount
+        return () => {
+            if (objectUrlRef.current) {
+                URL.revokeObjectURL(objectUrlRef.current);
+            }
+        };
     }, [testData]);
 
+    const handleOpen = () => {
+        if (objectUrl) {
+            window.open(objectUrl, '_blank');
+        }
+    };
+
+    const handleDownload = () => {
+        if (objectUrl) {
+            const link = document.createElement("a");
+            link.href = objectUrl;
+            link.download = gen_pdf_name();
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
 
     const gen_pdf_name = (): string => {
-        const current_time = new Date();
-
-        const year = current_time.getFullYear().toString().padStart(4, '0');
-        const month = (current_time.getMonth() + 1).toString().padStart(2, '0');
-        const day = current_time.getDate().toString().padStart(2, '0');
-        const dateText = `${year}_${month}_${day}`;
-
-        const pdf_name = (`english_test-${dateText}`);
-        return pdf_name
-    }
+        const d = new Date();
+        const yyyy = d.getFullYear().toString().padStart(4, '0');
+        const mm = (d.getMonth() + 1).toString().padStart(2, '0');
+        const dd = d.getDate().toString().padStart(2, '0');
+        return `english_test-${yyyy}_${mm}_${dd}.pdf`;
+    };
 
     return (
         <div className="outputpage_main">
-            <h2>英単語テストのダウンロードが完了いたしました。</h2>
-            
-            <button className="return-button" onClick={() => navigate("/")}>戻る</button>
-            
-            
+            <h2>英単語テストのPDFが生成されました。</h2>
+
+            <div className="button-group">
+                <p>
+                    <button className="open-button" onClick={handleOpen}>ブラウザで開く</button>
+                </p>
+                <p>
+                    <button className="download-button" onClick={handleDownload}>PDFをダウンロード</button>
+                </p>
+                <p>
+                    <button className="return-button" onClick={() => navigate("/")}>戻る</button>
+                </p>
+                
+            </div>
         </div>
     );
 };

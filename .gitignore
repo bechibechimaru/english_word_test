@@ -1,5 +1,7 @@
 /target
 .pdf
+.env
+.sample
 
 # Node.js
 node_modules/
