@@ -42,7 +42,7 @@ const MainPage = () => {
 
         try{
             const response = await axios.post<GenerateTestRespose>(
-                "http://54.178.56.216:3000/generate-test", 
+                "http://localhost:3000/generate-test", 
             {
                 english_word_book: englishWordBook,
                 times: times,
@@ -82,6 +82,10 @@ const MainPage = () => {
         }
         else if (startNumber >= endNumber) {
             setError("終了番号は開始番号より後の数値を入力してください");
+            return false;
+        }
+        else if (times > (endNumber - startNumber + 1)){
+            setError("問題数は出力範囲より小さい値を設定してください")
             return false;
         }
 

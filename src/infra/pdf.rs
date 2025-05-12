@@ -3,7 +3,6 @@ use genpdf::fonts::FontData;
 use chrono::prelude::Local;
 
 pub fn gen_test_pdf(question_list: Vec<String>, answer_list: Vec<String>) -> Document {
-    println!("{}", "PDFファイルの生成中...");
     let title = "英単語テスト";
 
     let font_family: genpdf::fonts::FontFamily<FontData> =
