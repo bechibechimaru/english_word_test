@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import '../style/OutputPage.css';
+import Button from "../components/Button";
 
 const OutputPage = () => {
     const location = useLocation();
@@ -62,15 +63,20 @@ const OutputPage = () => {
 
             <div className="button-group">
                 <p>
-                    <button className="open-button" onClick={handleOpen}>ブラウザで開く</button>
+                    <Button className="open-button" onClick={handleOpen}>
+                        ブラウザで開く
+                    </Button>
                 </p>
                 <p>
-                    <button className="download-button" onClick={handleDownload}>PDFをダウンロード</button>
+                    <Button className="download-button" onClick={handleDownload}>
+                        PDFをダウンロード
+                    </Button>
                 </p>
                 <p>
-                    <button className="return-button" onClick={() => navigate("/")}>戻る</button>
+                    <Button className="return-button" onClick={() => navigate("/")}> 
+                        戻る
+                    </Button>
                 </p>
-                
             </div>
         </div>
     );

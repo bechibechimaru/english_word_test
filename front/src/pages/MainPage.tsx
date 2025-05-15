@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 
 import axios from "axios";
-import "./MainPage.css";
+import "../style/MainPage.css";
+import Button from "../components/Button";
 
 // 出力する英単語などを入力させるページ
 type GenerateTestRespose = {
@@ -82,12 +83,8 @@ const MainPage = () => {
     };
 
     return (
-        <div className="main_content">
+        <div className="whole_content">
             <Header/>
-
-            <div>
-                英単語帳を指定して、英単語テストをPDF形式で生成することができます。
-            </div>
 
             <div className="main_content">
                 <div className="english_word_book">
@@ -146,11 +143,11 @@ const MainPage = () => {
 
                 <br />
 
-                <button onClick={handleSubmit} disabled={loading}>
-                    <div className="button_text">
-                        {loading ? "生成中...しばらくお待ちください" : "上記の内容でテストを作成する"}
-                    </div>
-                </button>
+                
+                <Button onClick={handleSubmit} disabled={loading}>
+                    {loading ? "生成中...しばらくお待ちください" : "上記の内容でテストを作成する"}  
+                </Button>
+
             </div>
 
             {error && <div style={{ color: "red" }}>{error}</div>}
