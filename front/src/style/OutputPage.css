@@ -1,8 +1,17 @@
 .outputpage_main{
-    margin: 5em;
+    overflow: hidden;
+    text-align: center;
+    padding: 5px;
+    margin: 10%;
+    box-shadow: 15px 10px 20px gray;
+    border-radius: 10px;
 }  
 
+.open-button,.download-button{
+    margin: 10px;
+}
 .return-button{
+    margin: 10px;
     float: right;
 }
 
