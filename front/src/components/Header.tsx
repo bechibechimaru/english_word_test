@@ -1,8 +1,8 @@
-import './Header.css';
-
 const Header = () => {
     return (
-        <header>英単語テスト作成サイト</header>
+        <header className="text-center font-bold m-8">
+            英単語テスト作成サイト
+        </header>
     );
 };
 

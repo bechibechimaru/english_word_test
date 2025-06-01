@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import '../style/OutputPage.css';
 import Button from "../components/Button";
 
 const OutputPage = () => {
