@@ -85,7 +85,7 @@ const MainPage = () => {
         <div className="grid place-content-center m-6">
             <Header />
 
-                <div className="mt-6 mx-6">
+                <div className="m-[6vw]">
                     <select 
                         className="border appearance-none text-light py-4 pl-2 pr-20 rounded-[2vw]"
                         value={englishWordBook}
