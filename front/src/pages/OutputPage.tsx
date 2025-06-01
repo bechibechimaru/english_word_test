@@ -57,22 +57,28 @@ const OutputPage = () => {
     };
 
     return (
-        <div className="outputpage_main">
-            <h2>英単語テストのPDFが生成されました。</h2>
+        <div>
+            <div className="m-[10vh] text-center font-bold">
+                <h2>テストの作成が完了しました。</h2>
+            </div>
+            
 
-            <div className="button-group">
+            <div className="fixed bottom-[10vh] left-0 right-0 text-center flex-col-reverse">
                 <p>
-                    <Button className="open-button" onClick={handleOpen}>
+                    <Button className="w-[60vw] py-[1vh] mt-[2.5vh] rounded-[2vw] text-center text-white bg-blue-400" onClick={handleOpen}>
                         ブラウザで開く
                     </Button>
                 </p>
                 <p>
-                    <Button className="download-button" onClick={handleDownload}>
+                    <Button className="w-[60vw] py-[1vh] mt-[2.5vh] rounded-[2vw] text-center text-white bg-blue-400" onClick={handleDownload}>
                         PDFをダウンロード
                     </Button>
                 </p>
                 <p>
-                    <Button className="return-button" onClick={() => navigate("/")}> 
+                    <Button 
+                        className="w-[60vw] py-[1vh] mt-[2.5vh] rounded-[2vw] text-center border text-black bg-white-400" 
+                        onClick={() => navigate("/")}
+                    > 
                         戻る
                     </Button>
                 </p>
