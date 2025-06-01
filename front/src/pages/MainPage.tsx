@@ -82,21 +82,21 @@ const MainPage = () => {
     };
 
     return (
-        <div className="grid place-content-center m-6">
+        <div className="grid place-content-center">
             <Header />
 
-                <div className="m-[6vw]">
-                    <select 
-                        className="border appearance-none text-light py-4 pl-2 pr-20 rounded-[2vw]"
-                        value={englishWordBook}
-                        onChange={(e) => setEnglishWordBook(e.target.value)}
-                    >
-                        <option value="">英単語帳を選択</option>
-                        <option value="shisutan">システム英単語［シス単］（5訂版）</option>
-                    </select>
-                </div>
-                
-                <div className="m-6 content-center">
+                <div className="mx-6 content-center">
+                    <div className="m-6">
+                        <select 
+                            className="mt-1 py-3 pl-2 pr-20 border rounded-[2vw]"
+                            value={englishWordBook}
+                            onChange={(e) => setEnglishWordBook(e.target.value)}
+                        >
+                            <option value="">英単語帳を選択</option>
+                            <option value="shisutan">システム英単語［シス単］（5訂版）</option>
+                        </select>
+                    </div>
+
                     <div className="m-6 ">
                         <div className="pl-1">
                             開始番号
