@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 
 import axios from "axios";
-import "../style/MainPage.css";
 import Button from "../components/Button";
 
 // 出力する英単語などを入力させるページ
@@ -83,72 +82,71 @@ const MainPage = () => {
     };
 
     return (
-        <div className="whole_content">
-            <Header/>
+        <div className="grid place-content-center m-6">
+            <Header />
 
-            <div className="main_content">
-                <div className="english_word_book">
-                    英単語帳を選択してください
-                    
-                    <br />
+                <div className="mt-6 mx-6">
                     <select 
+                        className="border appearance-none text-light py-4 pl-2 pr-20 rounded-[2vw]"
                         value={englishWordBook}
                         onChange={(e) => setEnglishWordBook(e.target.value)}
                     >
-                        <option value="">英単語帳を選択してください</option>
+                        <option value="">英単語帳を選択</option>
                         <option value="shisutan">システム英単語［シス単］（5訂版）</option>
                     </select>
                 </div>
                 
-                <div className="test_range">
-                    <br className="test_range_explanation"/>
-                        範囲を指定してください
-                    <br />
-
-                    <div>
-                        開始番号：
+                <div className="m-6 content-center">
+                    <div className="m-6 ">
+                        <div className="pl-1">
+                            開始番号
+                        </div>
                         <input 
-                            type="tel" 
+                            className="mt-1 py-3 pl-2 pr-30 border rounded-[2vw]"
+                            type="number" 
+                            name="startNumber"
+                            inputMode="numeric"
+                            placeholder="開始番号を入力"
                             value={startNumber}
                             onChange={(e) => setStartNumber(Number(e.target.value))}
                         /> 
-                        <br />
-                        終了番号：
+                    </div>
+                    <div className="m-6">
+                        <div className="pl-1">
+                            終了番号
+                        </div>
+
                         <input 
-                            type="tel" 
+                            className="mt-1 py-3 pl-2 pr-30 border rounded-[2vw]"
+                            type="number" 
+                            name="endNumber"
+                            inputMode="numeric"
+                            placeholder="終了番号を入力"
                             value={endNumber}
                             onChange={(e) => setEndNumber(Number(e.target.value))}
                         />
                     </div>
-                </div>
 
-                <br />
-
-                <div className="Number_of_questions">
-                    <div className="Number_of_questions_explanation">
-                        問題数を指定してください
-
-                        <br />
-
-                        <div>
-                            問題数：
-                            <input 
-                                type="tel" 
-                                value={times}
-                                onChange={(e) => setTimes(Number(e.target.value))}
-                            />
+                    <div className="m-6">
+                        <div className="pl-1">
+                            問題数
                         </div>
-                    </div>
+                        <input 
+                            className="mt-1 py-3 pl-2 pr-30 border rounded-[2vw]"
+                            type="tel" 
+                            value={times}
+                            onChange={(e) => setTimes(Number(e.target.value))}
+                        />
+                        </div>
                 </div>
 
-                <br />
-
-                
-                <Button onClick={handleSubmit} disabled={loading}>
+                <Button 
+                    className="text-white bg-blue-400 m-6 p-3 rounded-[2vw]"   
+                    onClick={handleSubmit} 
+                    disabled={loading} 
+                    >
                     {loading ? "生成中...しばらくお待ちください" : "上記の内容でテストを作成する"}  
                 </Button>
-
-            </div>
 
             {error && <div style={{ color: "red" }}>{error}</div>}
 

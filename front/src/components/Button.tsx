@@ -1,5 +1,3 @@
-import "../style/Button.css";
-
 type ButtonProps = {
     type?: "button" | "submit" | "reset";
     onClick?: () => void;
