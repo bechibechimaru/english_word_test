@@ -36,7 +36,7 @@ pub async fn generate_test_handler(
         }
     };
 
-    println!("[DEBUG]:[リクエスト]問題数:{}, テスト範囲{}~{}: [レスポンス]要素数:{}, 生成数値{:?}", times, start_number,end_number, row_id_list.len(), row_id_list);
+    println!("[INFO]:[リクエスト][{}]問題数:{}, テスト範囲{}~{}: [レスポンス]要素数:{}, 生成数値{:?}", book_name,times, start_number,end_number, row_id_list.len(), row_id_list);
 
     let sql_query = generate_sql_query(&book_name, row_id_list);
 

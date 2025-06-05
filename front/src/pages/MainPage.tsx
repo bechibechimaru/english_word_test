@@ -94,6 +94,7 @@ const MainPage = () => {
                         >
                             <option value="">英単語帳を選択</option>
                             <option value="shisutan">システム英単語［シス単］（5訂版）</option>
+                            <option value="target1900">英単語ターゲット1900（6訂版）</option>
                         </select>
                     </div>
 
