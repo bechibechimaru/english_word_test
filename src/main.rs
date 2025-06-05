@@ -1,3 +1,8 @@
+mod presentation;
+mod application;
+mod domain;
+mod infra;
+
 use std::env;
 use std::sync::Arc;
 
@@ -11,11 +16,6 @@ use tower_http::cors::{CorsLayer, AllowHeaders, Any};
 use sqlx::mysql::MySqlPool;
 
 use crate::presentation::handler::generate_test_handler;
-
-mod presentation;
-mod application;
-mod domain;
-mod infra;
 
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
