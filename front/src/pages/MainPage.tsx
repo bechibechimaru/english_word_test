@@ -95,6 +95,8 @@ const MainPage = () => {
                             <option value="">英単語帳を選択</option>
                             <option value="shisutan">システム英単語［シス単］（5訂版）</option>
                             <option value="target1900">英単語ターゲット1900（6訂版）</option>
+                            <option value="stock4500">英単語Stock4500（428~506）</option>
+                            <option value="target1200">英単語ターゲット1200 改訂版</option>
                         </select>
                     </div>
 
@@ -104,12 +106,13 @@ const MainPage = () => {
                         </div>
                         <input 
                             className="mt-1 py-3 pl-2 pr-30 border rounded-[2vw]"
-                            type="number" 
+                            type="tel" 
                             name="startNumber"
                             inputMode="numeric"
+                            pattern="[0-9]*"
                             placeholder="開始番号を入力"
                             value={startNumber}
-                            onChange={(e) => setStartNumber(Number(e.target.value))}
+                            onChange={(e) => setStartNumber(Number(e.target.value.replace(/^0+/, '')))}
                         /> 
                     </div>
                     <div className="m-6">
@@ -119,12 +122,13 @@ const MainPage = () => {
 
                         <input 
                             className="mt-1 py-3 pl-2 pr-30 border rounded-[2vw]"
-                            type="number" 
+                            type="tel" 
                             name="endNumber"
                             inputMode="numeric"
+                            pattern="[0-9]*"
                             placeholder="終了番号を入力"
                             value={endNumber}
-                            onChange={(e) => setEndNumber(Number(e.target.value))}
+                            onChange={(e) => setEndNumber(Number(e.target.value.replace(/^0+/, '')))}
                         />
                     </div>
 
@@ -135,8 +139,10 @@ const MainPage = () => {
                         <input 
                             className="mt-1 py-3 pl-2 pr-30 border rounded-[2vw]"
                             type="tel" 
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             value={times}
-                            onChange={(e) => setTimes(Number(e.target.value))}
+                            onChange={(e) => setTimes(Number(e.target.value.replace(/^0+/, '')))}
                         />
                         </div>
                 </div>
