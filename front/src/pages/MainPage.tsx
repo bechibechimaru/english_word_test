@@ -35,7 +35,7 @@ const MainPage = () => {
 
         try{
             const response = await axios.post<GenerateTestRespose>(
-                "http://54.178.56.216:3000/generate-test", 
+                "http://localhost:3000/generate-test", 
             {
                 english_word_book: englishWordBook,
                 times: times,

@@ -6,5 +6,6 @@ pub async fn execute_sql_query(pool: &MySqlPool, query: &str) -> Result<Vec<Test
     let rows: Vec<Test> = sqlx::query_as(query)
         .fetch_all(pool)
         .await?;
+    println!("sqlクエリSELECT結果: {:?}", rows);
     Ok(rows)
 }
