@@ -36,7 +36,14 @@ pub async fn generate_test_handler(
         }
     };
 
-    println!("[INFO]:[リクエスト][{}]問題数:{}, テスト範囲{}~{}: [レスポンス]要素数:{}, 生成数値{:?}", book_name,times, start_number,end_number, row_id_list.len(), row_id_list);
+    println!("[INFO]:[リクエスト][{}]問題数:{}, テスト範囲{}~{}: [レスポンス]要素数:{}, 生成数値{:?}", 
+        book_name,
+        times,
+        start_number,
+        end_number,
+        row_id_list.len(),
+        row_id_list
+    );
 
     let sql_query = generate_sql_query(&book_name, row_id_list);
 
@@ -45,7 +52,10 @@ pub async fn generate_test_handler(
     let english_words: Vec<String> = rows.iter().map(|r| r.english_word.clone()).collect();
     let japanese_words: Vec<String> = rows.iter().map(|r| r.japanese_word.clone()).collect();
 
+    println!("english_words: {:?}", english_words);
+
     let question_sheet = gen_test_pdf(english_words, japanese_words);
+
 
     let file_path = "temp_question_sheet.pdf";
     question_sheet.render_to_file(file_path).expect("Failed to write PDF file");
@@ -60,3 +70,4 @@ pub async fn generate_test_handler(
         test_data: pdf_base64,
     }))
 }
+

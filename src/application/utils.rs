@@ -41,7 +41,7 @@ pub fn generate_random_number(times: u16, start_number: u16, end_number: u16) ->
 
 pub fn generate_sql_query(book_name: &str, ids: Vec<u16>) -> String {
     let id_list = ids.iter().map(|id| id.to_string()).collect::<Vec<String>>().join(",");
-    format!("SELECT english_word, japanese_word FROM {} WHERE id IN ({})", book_name, id_list)
+    format!("SELECT english_word, japanese_word FROM {} WHERE id IN ({}) ORDER BY FIELD (id, {})", book_name, id_list, id_list)
 }
 
 pub fn range_validation(times: u16, start_number: u16, end_number: u16) -> bool {
